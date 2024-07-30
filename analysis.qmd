@@ -1,0 +1,57 @@
+---
+title: "Elections"
+format: html
+execute: 
+  echo: FALSE
+---
+
+```{r}
+#| label: setup
+#| message: FALSE
+
+library(tidyverse)
+library(primer.data)
+library(gtsummary)
+library(brms)
+library(tidybayes)
+```
+
+
+```{r}
+#| label: EDA
+
+governors |>
+  select(state, election_age, death_age) |> 
+  filter(state == "Massachusetts") |>
+  ggplot(aes(x = death_age)) +
+  geom_density()
+```
+
+
+```{r}
+#| label: model
+#| cache: TRUE
+clean <- governors |>
+  select(state, election_age, death_age) |> 
+  filter(state == "Massachusetts")
+
+fit_gov <- brm(data = clean,
+               formula = death_age ~ 1,
+               family = gaussian(),
+               silent = 2,
+               refresh = 0)
+
+```
+
+
+```{r}
+fit_gov
+```
+
+
+Preceptor Table: One row for each governor. One column for lived_after (outcome variable) and some covariates: state, election_age, party. 
+
+Stability: People live longer now.
+
+Representiveness: Massachusetts doesn't represent just Newton.
+
